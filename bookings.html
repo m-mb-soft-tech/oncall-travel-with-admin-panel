@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookings</title>
+  <style>
+    /* Basic styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      position: relative; /* For positioning buttons */
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+
+    /* Card container layout */
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+      gap: 20px;
+      margin: 20px;
+    }
+
+    /* Card styling */
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card p {
+      margin: 10px 0;
+    }
+
+    /* Loading indicator styling */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .spinner {
+      border: 8px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 8px solid #333;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 10px 20px;
+      background-color: #646abd;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #0f44b6;
+    }
+
+    .top-right {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+
+    .bottom-left {
+      position: fixed;
+      background-color: #c2435f;
+      bottom: 20px;
+      left: 20px;
+    }
+
+    .bottom-left.btn:hover {
+      background-color: #eb0c3c;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        font-size: 16px; /* Adjust base font-size for smaller screens */
+      }
+
+      h1 {
+        font-size: 1.5rem; /* Smaller font-size for the heading */
+      }
+
+      .card-container {
+        margin: 10px; /* Less margin for mobile */
+        gap: 15px;
+      }
+
+      .card {
+        padding: 15px; /* Less padding for smaller screens */
+      }
+
+      .btn {
+        padding: 8px 16px; /* Adjust button padding for smaller devices */
+      }
+
+      .top-right {
+        right: 10px; /* Reduce space on the right for the button */
+        top: 10px; /* Reduce space on the top for the button */
+      }
+
+      .bottom-left {
+        bottom: 10px; /* Adjust button positioning for smaller screens */
+        left: 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .h1{
+        top: 10px;
+        left:10px;
+      }
+      .card {
+        padding:5px; /* Further reduce padding for smaller screens */
+      }
+
+      .card-container {
+        gap:5px; /* Smaller gap between cards */
+        padding: 20px;
+      }
+
+      .btn {
+        padding: 7px 7px; /* Even smaller button padding for mobile */
+      }
+
+      .top-right {
+        right: 5px; /* Adjust top-right button for very small screens */
+        top: 50px;
+      }
+
+      .bottom-left {
+        bottom: 5px; /* Adjust bottom-left button for very small screens */
+        left: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bookings</h1>
+  
+  <!-- Loading Indicator -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+  </div>
+  
+  <!-- Card Container -->
+  <div id="cardContainer" class="card-container" style="display: none;">
+    <!-- Booking cards will be dynamically generated here --> 
+  </div>
+  
+  <!-- Buttons -->
+  <button class="btn top-right" onclick="window.location.href='messages.html';">Messages</button>
+  <button class="btn top-right" style="right: 130px;" onclick="window.location.href='newsletter.html';">Newsletter</button>
+  <button id="logoutButton" class="btn bottom-left">Logout</button>
+
+  <script>
+
+    // Check if the user is logged in by verifying the token in localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('authToken');
+      
+      // If no token exists, redirect to the login page
+      if (!token) {
+        window.location.href = 'login.html';  // Replace with your login page URL
+      } else {
+        fetchAllData();  // Fetch bookings data if token is present
+      }
+    });
+
+    // Fetch bookings data from Google Sheets
+    const cardContainer = document.getElementById('cardContainer');
+    const loadingIndicator = document.getElementById('loading');
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyCsg9649o1hlULQvcPCcyieueXpK7R9eErLoP76KWnlTT22R40_4CS6m--FC63hk1S/exec';  // Replace with your actual Web App URL
+
+    function fetchAllData() {
+      const fetchData = new FormData();
+      fetchData.append('action', 'fetch');
+      fetchData.append('sheet', 'Bookings');  // Specify that we're fetching from Bookings
+
+      fetch(webAppUrl, {
+        method: 'POST',
+        body: fetchData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          displayData(data.data);
+        }
+      })
+      .catch(error => console.error('Error:', error))
+      .finally(() => {
+        // Hide loading indicator and show card container
+        loadingIndicator.style.display = 'none';
+        cardContainer.style.display = 'grid';
+      });
+    }
+
+    // Display bookings data on the page
+    function displayData(data) {
+      cardContainer.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `
+          <p><strong>From:</strong> ${item.fromm}</p>
+          <p><strong>To:</strong> ${item.to}</p>
+          <p><strong>Departdate:</strong> ${item.departDate}</p>
+          <p><strong>Duration:</strong> ${item.duration}</p>
+          <p><strong>Adults:</strong> ${item.adults}</p>
+          <p><strong>Children:</strong> ${item.children}</p>
+          <p><strong>Contact No:</strong> ${item.contactNo}</p>
+        `;
+        cardContainer.appendChild(card);
+      });
+    }
+
+    // Logout functionality
+    document.getElementById('logoutButton').addEventListener('click', function() {
+      localStorage.removeItem('authToken');  // Remove the token from localStorage
+      window.location.href = 'login.html';  // Redirect to login page after logout
+    });
+  </script>
+
+</body>
+</html>
