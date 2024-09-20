@@ -57,6 +57,31 @@
       .form-wrap {
         position: relative !important; /* Ensure the dropdown is positioned relative to the input */
       }
+
+      /* Dropdown Menu */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    min-width: 260px;
+    top: 100%;
+    border-radius: 4px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    padding: 10px 15px;
+    color: black;
+}
+
+/* .dropdown-content a:hover {
+    background-color: #555;
+} */
     </style>
 
     <!-- ===============================================-->
@@ -86,8 +111,28 @@
         <div class="collapse navbar-collapse border-top border-lg-0 mt-4 mt-lg-0" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto pt-2 pt-lg-0 font-base align-items-lg-center align-items-start">
                 <li class="nav-item px-3 px-xl-4"><a class="nav-link fw-medium" aria-current="page" href="index.html">Home</a></li>
+                <li class="nav-item px-3 px-xl-4 dropdown"><a class="nav-link fw-medium dropbtn" aria-current="page"
+                                href="service.html">Vehicles</a>
+                                <div class="dropdown-content">
+                                  <a href="">View All Vehicles</a>
+                                  <a href="">View Scorpios</a>
+                                  <a href="">View Volvo</a>
+                                  <a href="">View Deluxe Bus</a>
+                                  
+                                </div>
+                          </li>
                 <li class="nav-item px-3 px-xl-4"><a class="nav-link fw-medium" aria-current="page" href="about.html">About</a></li>
-                <li class="nav-item px-3 px-xl-4"><a class="nav-link fw-medium" aria-current="page" href="service.html">Services</a></li>
+                <li class="nav-item px-3 px-xl-4 dropdown"><a class="nav-link fw-medium dropbtn" aria-current="page"
+                              href="service.html">Services</a>
+                              <div class="dropdown-content">
+                                <a href="wedding-car.html">Wedding Rental</a>
+                                <a href="">Airport Drop/Pickup</a>
+                                <a href="">Corporate Vehicle Rental</a>
+                                <a href="within-city.html">Within city</a>
+                                <a href="outstation-travel.html">Outstation Travel</a>
+                                <a href="">Custmized Travel Vehicle</a>
+                              </div>
+                        </li>
                 <li class="nav-item px-3 px-xl-4"><a class="nav-link fw-medium" aria-current="page" href="blog.html">Blog</a></li>
                 <li class="nav-item px-3 px-xl-4"><a class="nav-link fw-medium" aria-current="page" href="contact.html">Contact</a></li>
             </ul>
